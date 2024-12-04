@@ -85,10 +85,25 @@ def findUser(user):
             data = json.load(f)
             data = data[user]
 
+            headers = {
+                "Content-Type": "application/json"
+            }
+
+            url2 = "https://mafia42.com/api/user/user-info"
+            user_id = {'id': data['ID']}
+
+            data2 = requests.post(url2, json=user_id, headers=headers).json()
+            data2 = data2['userData']
+            print(data2)
+
             res = {
-                "todaygames": data['GAMES'],
-                "win_count": data['win_count'],
-                "lose_count": data['lose_count']
+                "todaygames": data2['win_count']+ data2['lose_count'] - data['game_count'],
+
+                "current_win_count": data2['win_count'],
+                "current_lose_count": data2['lose_count'],
+                "past_win_count": data['win_count'],
+                "past_lose_count": data['lose_count']
+
             }
 
             return res
@@ -99,6 +114,7 @@ def findUser(user):
             "lose_count": 0
         }
 
+findUser("대현")
 
 def gettime():
     time = ''
