@@ -144,8 +144,3 @@ def main():
     res.sort(key=lambda x: x['closeness'], reverse=True)
 
     return res
-
-
-if __name__ == '__main__':
-    findUser('대현')
-    main()
