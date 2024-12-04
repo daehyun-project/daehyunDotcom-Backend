@@ -46,7 +46,7 @@ def saveUser():
                     "win_count": data2['win_count'],
                     "lose_count": data2['lose_count'],
                     'game_count': data2['win_count'] + data2['lose_count'],
-                    "nickname_color": -15659238
+                    "nickname_color": data2['nickname_color']
                 }
 
                 # user_data.append()
