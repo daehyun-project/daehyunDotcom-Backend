@@ -45,8 +45,12 @@ def saveUser():
                     'ID': data2['ID'],
                     "nickname_color": data2['nickname_color']
                 }
+
             except:
                 pass
+
+        print(user_data, len(user_data))
+
         payload['comment']['value'] += 30
 
     with open('/home/ubuntu/mafia42-coloranking/colorData.json', 'w', encoding='UTF-8-sig') as f:

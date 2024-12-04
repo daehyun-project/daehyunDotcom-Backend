@@ -85,17 +85,19 @@ def findUser(user):
             data = json.load(f)
             data = data[user]
 
-            print(data, user)
-
             res = {
-                "todaygames": data['game_count'],
+                "todaygames": data['GAMES'],
                 "win_count": data['win_count'],
                 "lose_count": data['lose_count']
             }
 
             return res
     except:
-        return {"todaygames": "null"}
+        return {
+            "todaygames": "null",
+            "win_count": 0,
+            "lose_count": 0
+        }
 
 
 def gettime():
@@ -115,9 +117,6 @@ def ad2():
     with open("ad2.json", 'r', encoding='utf-8') as file:
         data = json.load(file)
         return data
-
-
-# print(findUser('대현'))
 
 def main():
     # JSON 파일 읽기
