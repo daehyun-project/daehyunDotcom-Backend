@@ -49,8 +49,7 @@ def saveUser():
                 pass
         payload['comment']['value'] += 30
 
-    # with open('/home/ubuntu/mafia42-coloranking/colorData.json', 'w', encoding='UTF-8-sig') as f:
-    with open('colorData.json', 'w', encoding='UTF-8-sig') as f:
+    with open('/home/ubuntu/mafia42-coloranking/colorData.json', 'w', encoding='UTF-8-sig') as f:
         f.write(json.dumps(user_data, ensure_ascii=False))
 
 saveUser()
