@@ -30,18 +30,34 @@ class Item(BaseModel):
     price: float
 
 
-
-@app.get("/")
+@app.get("/api")
 async def read_root():
     return "This is root path from MyAPI"
 
-@app.get("/user/")
+
+@app.get("/api/user/")
 async def findUser(user):
     return findUser(user)
 
-@app.get("/datas")
+
+@app.get("/api/datas")
 async def read_datas():
     return main()
+
+
+@app.get("/api/time")
+async def gettime():
+    return gettime()
+
+
+@app.get("/api/ad1")
+async def ad1():
+    return ad1()
+
+
+@app.get("/api/ad2")
+async def ad2():
+    return ad2()
 
 
 # 요청을 숨기기 위함
@@ -60,11 +76,7 @@ def hex_to_rgb(hex_color):
 
 
 def calculate_black_closeness(r, g, b):
-
-    brightness = (0.33 * r + 0.33 * g + 0.33 * b) / 255.0
-    black_closeness = (1 - brightness) * 100
-
-    return black_closeness
+    return 100 * (1 - ((r ** 2 + g ** 2 + b ** 2) ** 0.5) / 441.673)
 
 
 def findUser(user):
@@ -73,118 +85,67 @@ def findUser(user):
             data = json.load(f)
             data = data[user]
 
-            url2 = "https://mafia42.com/api/user/user-info"
-            user_id = {'id': data['ID']}
+            print(data, user)
 
-
-            data2 = requests.post(url2, json=user_id, headers=headers).json()['userData']
-            nowgmaes = data2['win_count']+data2['lose_count']
-
-            res = {"todaygames" : nowgmaes - data['GAMES']}
+            res = {
+                "todaygames": data['game_count'],
+                "win_count": data['win_count'],
+                "lose_count": data['lose_count']
+            }
 
             return res
     except:
-        return None
+        return {"todaygames": "null"}
+
+
+def gettime():
+    time = ''
+    with open('min_current_time.txt', 'r', encoding='UTF-8-sig') as f:
+        time = f.readline().rstrip('\n')
+    return time
+
+
+def ad1():
+    with open("ad1.json", 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        return data
+
+
+def ad2():
+    with open("ad2.json", 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        return data
+
 
 # print(findUser('대현'))
 
-# def saveUser():
-#     headers = {
-#         "Content-Type": "application/json"
-#     }
-#
-#     main_url = "https://mafia42.com/api/show-lastDiscussion/1007550"
-#     response = requests.get(main_url, headers=headers)
-#
-#     response = response.json()
-#     response = response['boardData']
-#     data = response['comment_count']
-#
-#     n = (data // 30) + 1
-#
-#     url = "https://mafia42.com/comment/show-lastDiscussion"
-#     payload = {
-#         "comment": {
-#             "article_id": "1007550",
-#             "value": 0
-#         }
-#     }
-#
-#     user_data = {}
-#
-#     for _ in range(0, n):
-#         response = requests.post(url, json=payload, headers=headers)
-#         data = response.json()
-#         data = data['commentData']
-#         for i in data:
-#             try:
-#                 url2 = "https://mafia42.com/api/user/user-info"
-#                 user_id = {'id': i['user_id']}
-#
-#                 data2 = requests.post(url2, json=user_id, headers=headers).json()
-#                 data2 = data2['userData']
-#
-#                 user_data[data2['NICKNAME']] = {
-#                     'ID': data2['ID'],
-#                     'GAMES': data2['win_count'] + data2['lose_count']}
-#
-#                 # user_data.append()
-#             except:
-#                 pass
-#         payload['comment']['value'] += 30
-#
-#     with open('data.json', 'w', encoding='UTF-8-sig') as f:
-#         f.write(json.dumps(user_data, ensure_ascii=False))
-
-# saveUser()
-
 def main():
-    headers = {
-        "Content-Type": "application/json"
-    }
+    # JSON 파일 읽기
+    with open('colorData.json', 'r', encoding='utf-8-sig') as f:
+        user_data = json.load(f)
 
-    main_url = "https://mafia42.com/api/show-lastDiscussion/1007550"
-    response = requests.get(main_url, headers=headers)
+    res = []
 
-    response = response.json()
-    response = response['boardData']
-    data = response['comment_count']
+    for i in user_data:
+        color = user_data[i]['nickname_color']
+        unsigned_value = color & 0xFFFFFFFF
+        hex_value = hex(unsigned_value)
+        formatted_hex_value = hex_value.upper().replace('0XFF', '')
+        r, g, b = hex_to_rgb(formatted_hex_value)
+        closeness = calculate_black_closeness(r, g, b)
+        closeness = round(closeness, 4)
 
-    n = (data // 30) + 1
+        res.append({
+            "nickname": i,
+            "color": formatted_hex_value,
+            "closeness": closeness
+        })
 
-    url = "https://mafia42.com/comment/show-lastDiscussion"
-    payload = {
-        "comment": {
-            "article_id": "1007550",
-            "value": 0
-        }
-    }
+    res.sort(key=lambda x: x['closeness'], reverse=True)
 
-    user_data = []
+    return res
 
-    for _ in range(0, n):
-        response = requests.post(url, json=payload, headers=headers)
-        data = response.json()
-        data = data['commentData']
-        for i in data:
-            color = i['nickname_color']
-            unsigned_value = color & 0xFFFFFFFF
-            hex_value = hex(unsigned_value)
-            formatted_hex_value = hex_value.upper().replace('0XFF', '')
 
-            r, g, b = hex_to_rgb(formatted_hex_value)
-
-            closeness = calculate_black_closeness(r, g, b)
-            closeness = round(closeness, 4)
-
-            s = {
-                'nickname': i['nickname'],
-                'color': formatted_hex_value,
-                'closeness': closeness
-            }
-            user_data.append(s)
-        payload['comment']['value'] += 30
-
-    user_data = [dict(t) for t in {tuple(d.items()) for d in user_data}]
-    user_data.sort(key=lambda x: x['closeness'], reverse=True)
-    return user_data
+if __name__ == '__main__':
+    findUser('대현')
+    main()

@@ -43,18 +43,14 @@ def saveUser():
 
                 user_data[data2['NICKNAME']] = {
                     'ID': data2['ID'],
-                    "win_count": data2['win_count'],
-                    "lose_count": data2['lose_count'],
-                    'game_count': data2['win_count'] + data2['lose_count'],
-                    "nickname_color": -15659238
+                    "nickname_color": data2['nickname_color']
                 }
-
-                # user_data.append()
             except:
                 pass
         payload['comment']['value'] += 30
 
-    with open('data.json', 'w', encoding='UTF-8-sig') as f:
+    # with open('/home/ubuntu/mafia42-coloranking/colorData.json', 'w', encoding='UTF-8-sig') as f:
+    with open('colorData.json', 'w', encoding='UTF-8-sig') as f:
         f.write(json.dumps(user_data, ensure_ascii=False))
 
 saveUser()
