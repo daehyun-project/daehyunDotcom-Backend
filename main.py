@@ -117,10 +117,19 @@ def findUser(user):
 findUser("대현")
 
 def gettime():
-    time = ''
+    colortime = ''
+    gametime = ''
     with open('min_current_time.txt', 'r', encoding='UTF-8-sig') as f:
         time = f.readline().rstrip('\n')
-    return time
+    with open('day_current_time.txt', 'r', encoding='UTF-8-sig') as f:
+        time2 = f.readline().rstrip('\n')
+
+    return {
+        "colortime": time,
+        "gametime": time2
+
+    }
+
 
 
 def ad1():
