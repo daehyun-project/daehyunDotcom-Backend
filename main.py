@@ -60,11 +60,54 @@ async def ad2():
     return ad2()
 
 
+
 # 요청을 숨기기 위함
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0",
 }
 
+
+@app.get("/getChannel")
+async def get_channel():
+    return get_channel()
+
+def get_channel():
+    url = "https://mafia42.com/php/channels/channel_ko.php"
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    # 데이터 조회
+    response = requests.get(url, headers=headers)
+    data = response.json()  # 응답 JSON 데이터
+
+    # 채널 이름과 유저 수 매핑
+    channel_names = {
+        "0": "초보채널",
+        "1": "1채널",
+        "2": "2채널",
+        "3": "3채널",
+        "19": "19세 채널",
+        "20": "랭크채널",
+        "42": "이벤트채널"
+    }
+
+    # 결과를 채널 ID와 이름, 유저 수 포함하여 반환
+    channel_data = []
+    for channel in data:
+        channel_id = channel['channel_id']
+        channel_name = channel_names.get(channel_id, "알 수 없음")
+        user_count = channel['user_count']
+
+        channel_data.append({
+            "channel_name": channel_name,
+            "user_count": user_count
+        })
+
+    return {"channels": channel_data}
+
+
+print(get_channel())
 
 def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')
@@ -120,13 +163,13 @@ def gettime():
     colortime = ''
     gametime = ''
     with open('min_current_time.txt', 'r', encoding='UTF-8-sig') as f:
-        time = f.readline().rstrip('\n')
+        colortime = f.readline().rstrip('\n')
     with open('day_current_time.txt', 'r', encoding='UTF-8-sig') as f:
-        time2 = f.readline().rstrip('\n')
+        gametime = f.readline().rstrip('\n')
 
     return {
-        "colortime": time,
-        "gametime": time2
+        "colortime": colortime,
+        "gametime": gametime
 
     }
 
